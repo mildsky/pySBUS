@@ -2,7 +2,7 @@ import serial
 import threading
 import time
 
-# futaba sbus footer is 0x04 -> 0x14 -> 0x24 -> 0x34 -> 0x04 -> ...
+# SBUS footer alternates in a repeating sequence: 0x04 → 0x14 → 0x24 → 0x34 → 0x04 → ... (only for FUTABA series)
 
 PORT = "/dev/tty.SLAB_USBtoUART"
 class SBUS:
@@ -20,16 +20,11 @@ class SBUS:
                 b = int.from_bytes(ser.read())
                 if b == 0x0F:
                     self.packet[0] = b
-                    print(f"0x{b:02X}")
                     for i in range(24):
                         b = int.from_bytes(ser.read())
                         self.packet[i+1] = b
-                        print(f"0x{b:02X}")
                     ch = self.parsePacket(self.packet)
                     print(ch)
-                    print("=========")
-                # print(f"0x{b:02X}")
-                # print(f"0b{b:08b}")
     def getPacket(self):
         return self.packet
     def parsePacket(self, packet):
